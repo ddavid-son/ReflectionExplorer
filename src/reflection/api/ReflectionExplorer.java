@@ -1,7 +1,5 @@
 package reflection.api;
 
-import jdk.nashorn.internal.codegen.types.Type;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -14,6 +12,9 @@ public class ReflectionExplorer implements Investigator {
 
     private Object suspect;
     //private Class suspectClass;
+
+    public ReflectionExplorer() {
+    }
 
     @Override
     public void load(Object anInstanceOfSomething) {
@@ -145,6 +146,15 @@ public class ReflectionExplorer implements Investigator {
 
     @Override
     public Object elevateMethodAndInvoke(String name, Class<?>[] parametersTypes, Object... args) {
+        //are we dealing with the direct methods of the class or her inheritance chain as well?
+        try {
+            Method method = this.suspect.getClass().getMethod(name, parametersTypes);
+            method.setAccessible(true);
+            // need to check if suspect is needed to be passed or suspect.class
+            return method.invoke(suspect, args);
+        } catch (Exception e) {
+            //do nothing
+        }
         return null;
     }
 
